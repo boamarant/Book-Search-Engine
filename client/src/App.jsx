@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 
 // Define the HTTP link
 const httpLink = createHttpLink({
-  uri: 'http://localhost:3001/graphql', // Ensure this matches your server's URL
+  uri: process.env.LIVE || 'http://localhost:3001/graphql', 
 });
 
 // Define the auth link to include JWT in headers
