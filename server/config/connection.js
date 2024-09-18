@@ -8,8 +8,7 @@ const dbUri = process.env.NODE_ENV === 'production' ? remoteUri : localUri;
 mongoose.connect(dbUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  // Set `tlsAllowInvalidCertificates` only if needed
-  // tlsAllowInvalidCertificates: process.env.NODE_ENV === 'production' ? false : true,
+  ssl: true,
 });
 
 module.exports = mongoose.connection;
