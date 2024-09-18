@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/book-search-engine', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  ssl: true,
+  tlsAllowInvalidCertificates: true,
+  tlsInsecure: true
 });
 
 module.exports = mongoose.connection;
