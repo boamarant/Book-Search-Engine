@@ -10,7 +10,7 @@ N/A
 
 ## Usage
 
-This project is being deployed on Render at the following URL: [https://boamarant.github.io/Personal-Blog-App/](https://boamarant.github.io/Personal-Blog-App/). 
+This project is being deployed on Render at the following URL: [https://book-search-engine-b891.onrender.com](https://book-search-engine-b891.onrender.com). 
 
 ## Credits
 
@@ -18,7 +18,7 @@ I referenced previous projects and examples from the Columbia University Coding 
 
 ## Features
 
-Currently, this application is not functional. I wasn't able to resolve issues with the actual functionality of the page. I tried many solutions and none of them seemed to work. Currently, the page only allows users to view the home page and click on the login/sign up button, but logging in, signing up, and searching for books are not actually working at this time.
+Users can create an account using the signup feature on the navbar. Users can also search for books and see a picture of the book cover, the title, a description, and the author. Users can save these books to their profile and see it on the "See Your Books" tab, where they can also remove any books they want to.
 
 ## Screenshot of Deployed Application
 

@@ -1,3 +1,5 @@
+require('dotenv').config(); // Add this line at the top
+
 const express = require('express');
 const path = require('path');
 const { ApolloServer } = require('apollo-server-express');
@@ -7,7 +9,7 @@ const { authMiddleware } = require('./utils/auth');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001; // Changed to 3001
+const PORT = process.env.PORT || 3001; // Use the PORT from .env
 
 // Middleware setup
 app.use(express.urlencoded({ extended: true }));
@@ -22,7 +24,7 @@ app.use(cors(corsOptions));
 
 // Serve static files from the React app in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/build')));
+  app.use(express.static(path.join(__dirname, '../client/dist')));
 }
 
 // Create Apollo Server instance
@@ -39,7 +41,7 @@ const startServer = async () => {
 
   // Serve React app for any other routes
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/build/index.html'));
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 
   // Connect to the database and start the server
