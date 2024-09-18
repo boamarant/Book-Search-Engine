@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation, useLazyQuery } from '@apollo/client';
 import { SAVE_BOOK } from '@graphql/mutations';
-import { SEARCH_BOOKS_QUERY } from '@graphql/queries';
+import { SEARCH_BOOKS_QUERY, GET_ME } from '@graphql/queries';
 import Auth from '../utils/auth';
 
 const SearchBooks = () => {
@@ -25,14 +25,29 @@ const SearchBooks = () => {
 
   const handleSaveBook = async (bookId) => {
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
-    console.log('Book to save:', bookToSave); 
+    if (!bookToSave) {
+      console.error('Book not found');
+      return;
+    }
+  
+    // Validate bookData structure
+    const bookData = {
+      bookId: bookToSave.bookId,
+      title: bookToSave.title,
+      authors: Array.isArray(bookToSave.authors) ? bookToSave.authors : [], // Ensure authors is an array
+      description: bookToSave.description || '',
+      image: bookToSave.image || '',
+      link: bookToSave.link || '',
+    };
+  
     try {
       await saveBook({
-        variables: { bookData: { ...bookToSave } },
+        variables: { bookData },
+        refetchQueries: [{ query: GET_ME }],
       });
       console.log('Book saved successfully');
     } catch (err) {
-      console.error('Error saving book:', err);
+      console.error('Error saving book:', err.message);
     }
   };
 

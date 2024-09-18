@@ -49,19 +49,24 @@ const resolvers = {
       return { token, user };
     },
     saveBook: async (parent, { bookData }, context) => {
-      if (context.user) {
-        // Log bookData to verify its structure
-        console.log('Received bookData:', bookData);
-
-        const updatedUser = await User.findByIdAndUpdate(
-          { _id: context.user._id },
-          { $addToSet: { savedBooks: bookData } },
-          { new: true }
-        );
-        return updatedUser;
-      }
-      throw new AuthenticationError('Not logged in');
-    },
+        if (context.user) {
+          console.log('Received bookData:', bookData);
+      
+          // Check if bookData structure is as expected
+          const { bookId, title, authors, description, image, link } = bookData;
+          if (!bookId || !title || !Array.isArray(authors)) {
+            throw new Error('Invalid bookData');
+          }
+      
+          const updatedUser = await User.findByIdAndUpdate(
+            { _id: context.user._id },
+            { $addToSet: { savedBooks: bookData } },
+            { new: true }
+          );
+          return updatedUser;
+        }
+        throw new AuthenticationError('Not logged in');
+      },
     removeBook: async (parent, { bookId }, context) => {
       if (context.user) {
         const updatedUser = await User.findByIdAndUpdate(
