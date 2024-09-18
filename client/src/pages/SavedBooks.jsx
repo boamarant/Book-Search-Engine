@@ -7,7 +7,7 @@ import Auth from '../utils/auth';
 const SavedBooks = () => {
   const { loading, data } = useQuery(GET_ME);
   const [removeBook] = useMutation(REMOVE_BOOK);
-  
+
   const userData = data?.me || {};
 
   const handleDeleteBook = async (bookId) => {
@@ -22,7 +22,6 @@ const SavedBooks = () => {
           });
         },
       });
-
       console.log('Book removed successfully');
     } catch (err) {
       console.error(err);

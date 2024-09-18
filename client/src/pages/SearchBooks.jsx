@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { SAVE_BOOK } from '@graphql/mutations';
-import { searchGoogleBooks } from '../utils/API';
+import { SEARCH_BOOKS_QUERY } from '@graphql/queries';
 import Auth from '../utils/auth';
 
 const SearchBooks = () => {
@@ -9,54 +9,45 @@ const SearchBooks = () => {
   const [searchedBooks, setSearchedBooks] = useState([]);
   const [saveBook] = useMutation(SAVE_BOOK);
 
-  const handleFormSubmit = async (event) => {
+  // Execute query when searchInput changes and is not empty
+  const { data, loading, error } = useQuery(SEARCH_BOOKS_QUERY, {
+    variables: { query: searchInput },
+    skip: !searchInput, // Skip query if searchInput is empty
+  });
+
+  // Update searchedBooks when data changes
+  React.useEffect(() => {
+    if (data && data.searchBooks) {
+      setSearchedBooks(data.searchBooks); // Update with search results
+    }
+  }, [data]);
+
+  const handleFormSubmit = (event) => {
     event.preventDefault();
-
-    if (!searchInput) {
-      return false;
-    }
-
-    try {
-      const response = await searchGoogleBooks(searchInput);
-
-      if (!response.ok) {
-        throw new Error('Something went wrong!');
-      }
-
-      const { items } = await response.json();
-      const bookData = items.map((book) => ({
-        bookId: book.id,
-        authors: book.volumeInfo.authors || ['No author available'],
-        title: book.volumeInfo.title,
-        description: book.volumeInfo.description,
-        image: book.volumeInfo.imageLinks?.thumbnail || '',
-        link: book.volumeInfo.infoLink,
-      }));
-
-      setSearchedBooks(bookData);
-      setSearchInput('');
-    } catch (err) {
-      console.error(err);
-    }
+    // No need to handle setting searchedBooks here anymore, as it's managed by useEffect
+    setSearchInput(''); // Clear input after search
   };
 
   const handleSaveBook = async (bookId) => {
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
-
     try {
       await saveBook({
         variables: { bookData: { ...bookToSave } },
       });
-
       console.log('Book saved successfully');
     } catch (err) {
-      console.error(err);
+      console.error('Error saving book:', err);
     }
   };
 
+  if (loading) return <p>Loading...</p>;
+  if (error) {
+    console.error('Search error:', error);
+    return <p>Error: {error.message}</p>;
+  }
+
   return (
     <div>
-      {/* Search form */}
       <form onSubmit={handleFormSubmit}>
         <input
           value={searchInput}
@@ -67,8 +58,8 @@ const SearchBooks = () => {
         <button type="submit">Search</button>
       </form>
 
-      {/* Search results */}
       <div>
+        {searchedBooks.length === 0 && <p>No books found</p>}
         {searchedBooks.map((book) => (
           <div key={book.bookId}>
             <h3>{book.title}</h3>

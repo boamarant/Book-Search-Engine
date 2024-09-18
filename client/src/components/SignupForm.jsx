@@ -4,35 +4,63 @@ import { ADD_USER } from '@graphql/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
-  const [addUser] = useMutation(ADD_USER);
   const [formState, setFormState] = useState({ username: '', email: '', password: '' });
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormState({ ...formState, [name]: value });
-  };
+  const [addUser, { error }] = useMutation(ADD_USER);
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    
     try {
       const { data } = await addUser({
         variables: { ...formState },
       });
 
-      Auth.login(data.addUser.token);
-    } catch (err) {
-      console.error(err);
+      // Ensure the token is being returned in the mutation response
+      if (data && data.addUser && data.addUser.token) {
+        Auth.login(data.addUser.token);
+      } else {
+        console.error('Token not found in the response');
+      }
+    } catch (e) {
+      console.error('Signup error:', e); // Improve error logging
     }
   };
 
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormState({
+      ...formState,
+      [name]: value,
+    });
+  };
+
   return (
-    <form onSubmit={handleFormSubmit}>
-      <input name="username" type="text" onChange={handleChange} placeholder="Your username" />
-      <input name="email" type="email" onChange={handleChange} placeholder="Your email" />
-      <input name="password" type="password" onChange={handleChange} placeholder="Your password" />
-      <button type="submit">Signup</button>
-    </form>
+    <div>
+      <form onSubmit={handleFormSubmit}>
+        <input
+          name="username"
+          type="text"
+          placeholder="Your username"
+          value={formState.username}
+          onChange={handleChange}
+        />
+        <input
+          name="email"
+          type="email"
+          placeholder="Your email"
+          value={formState.email}
+          onChange={handleChange}
+        />
+        <input
+          name="password"
+          type="password"
+          placeholder="******"
+          value={formState.password}
+          onChange={handleChange}
+        />
+        <button type="submit">Submit</button>
+      </form>
+      {error && <div>Signup failed</div>} {/* Handle error display */}
+    </div>
   );
 };
 

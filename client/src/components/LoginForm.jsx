@@ -4,8 +4,8 @@ import { LOGIN_USER } from '@graphql/mutations';
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
-  const [loginUser] = useMutation(LOGIN_USER);
   const [formState, setFormState] = useState({ email: '', password: '' });
+  const [loginUser, { error }] = useMutation(LOGIN_USER);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -19,10 +19,9 @@ const LoginForm = () => {
       const { data } = await loginUser({
         variables: { ...formState },
       });
-
       Auth.login(data.login.token);
     } catch (err) {
-      console.error(err);
+      console.error('Login error:', err);
     }
   };
 
@@ -31,6 +30,7 @@ const LoginForm = () => {
       <input name="email" type="email" onChange={handleChange} placeholder="Your email" />
       <input name="password" type="password" onChange={handleChange} placeholder="Your password" />
       <button type="submit">Login</button>
+      {error && <p>Error: {error.message}</p>}
     </form>
   );
 };
