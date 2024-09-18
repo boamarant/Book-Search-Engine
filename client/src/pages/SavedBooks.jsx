@@ -35,11 +35,13 @@ const SavedBooks = () => {
   return (
     <div>
       <h2>{Auth.loggedIn() ? `${userData.username}'s saved books` : 'Log in to see saved books'}</h2>
-      <div>
+      <div className="book-grid">
         {userData.savedBooks?.map((book) => (
-          <div key={book.bookId}>
+          <div className="book-card" key={book.bookId}>
+            {book.image && <img src={book.image} alt={book.title} className="book-image" />}
             <h3>{book.title}</h3>
             <p>{book.authors.join(', ')}</p>
+            {book.description && <p>{book.description}</p>}
             <button onClick={() => handleDeleteBook(book.bookId)}>Remove This Book</button>
           </div>
         ))}

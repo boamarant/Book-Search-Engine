@@ -30,11 +30,10 @@ const SearchBooks = () => {
       return;
     }
   
-    // Validate bookData structure
     const bookData = {
       bookId: bookToSave.bookId,
       title: bookToSave.title,
-      authors: Array.isArray(bookToSave.authors) ? bookToSave.authors : [], // Ensure authors is an array
+      authors: Array.isArray(bookToSave.authors) ? bookToSave.authors : [],
       description: bookToSave.description || '',
       image: bookToSave.image || '',
       link: bookToSave.link || '',
@@ -69,13 +68,14 @@ const SearchBooks = () => {
         <button type="submit">Search</button>
       </form>
 
-      <div>
+      <div className="book-grid">
         {searchedBooks.length > 0 ? (
           searchedBooks.map((book) => (
-            <div key={book.bookId}>
-              {book.image && <img src={book.image} alt={book.title} style={{ width: '100px', height: '150px' }} />}
+            <div className="book-card" key={book.bookId}>
+              {book.image && <img src={book.image} alt={book.title} className="book-image" />}
               <h3>{book.title}</h3>
               <p>{book.authors.join(', ')}</p>
+              {book.description && <p>{book.description}</p>}
               {Auth.loggedIn() && (
                 <button onClick={() => handleSaveBook(book.bookId)}>
                   Save This Book
