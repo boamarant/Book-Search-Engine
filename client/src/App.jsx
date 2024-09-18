@@ -1,11 +1,7 @@
 import React from 'react';
-import {
-  ApolloProvider,
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-} from '@apollo/client';
+import { ApolloProvider, ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { Routes, Route } from 'react-router-dom';
 import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
@@ -37,8 +33,11 @@ function App() {
     <ApolloProvider client={client}>
       <Navbar />
       <div className="container">
-        <SearchBooks />
-        <SavedBooks />
+        <Routes>
+          <Route path="/search" element={<SearchBooks />} />
+          <Route path="/saved" element={<SavedBooks />} />
+          <Route path="/" element={<SearchBooks />} /> {/* Default route */}
+        </Routes>
       </div>
     </ApolloProvider>
   );
