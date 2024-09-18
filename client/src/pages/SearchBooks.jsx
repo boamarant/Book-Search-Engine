@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { SAVE_BOOK } from '@graphql/mutations';
 import { SEARCH_BOOKS_QUERY } from '@graphql/queries';
 import Auth from '../utils/auth';
@@ -7,29 +7,25 @@ import Auth from '../utils/auth';
 const SearchBooks = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchedBooks, setSearchedBooks] = useState([]);
+  const [searchBooks, { data, loading, error }] = useLazyQuery(SEARCH_BOOKS_QUERY);
   const [saveBook] = useMutation(SAVE_BOOK);
 
-  // Execute query when searchInput changes and is not empty
-  const { data, loading, error } = useQuery(SEARCH_BOOKS_QUERY, {
-    variables: { query: searchInput },
-    skip: !searchInput, // Skip query if searchInput is empty
-  });
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    if (searchInput) {
+      searchBooks({ variables: { query: searchInput } });
+    }
+  };
 
-  // Update searchedBooks when data changes
   React.useEffect(() => {
     if (data && data.searchBooks) {
       setSearchedBooks(data.searchBooks); // Update with search results
     }
   }, [data]);
 
-  const handleFormSubmit = (event) => {
-    event.preventDefault();
-    // No need to handle setting searchedBooks here anymore, as it's managed by useEffect
-    setSearchInput(''); // Clear input after search
-  };
-
   const handleSaveBook = async (bookId) => {
     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
+    console.log('Book to save:', bookToSave); 
     try {
       await saveBook({
         variables: { bookData: { ...bookToSave } },
@@ -59,18 +55,22 @@ const SearchBooks = () => {
       </form>
 
       <div>
-        {searchedBooks.length === 0 && <p>No books found</p>}
-        {searchedBooks.map((book) => (
-          <div key={book.bookId}>
-            <h3>{book.title}</h3>
-            <p>{book.authors.join(', ')}</p>
-            {Auth.loggedIn() && (
-              <button onClick={() => handleSaveBook(book.bookId)}>
-                Save This Book
-              </button>
-            )}
-          </div>
-        ))}
+        {searchedBooks.length > 0 ? (
+          searchedBooks.map((book) => (
+            <div key={book.bookId}>
+              {book.image && <img src={book.image} alt={book.title} style={{ width: '100px', height: '150px' }} />}
+              <h3>{book.title}</h3>
+              <p>{book.authors.join(', ')}</p>
+              {Auth.loggedIn() && (
+                <button onClick={() => handleSaveBook(book.bookId)}>
+                  Save This Book
+                </button>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No results found</p>
+        )}
       </div>
     </div>
   );

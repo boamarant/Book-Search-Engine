@@ -2,6 +2,20 @@ const { AuthenticationError } = require('apollo-server-express');
 const { User } = require('../models');
 const { signToken } = require('../utils/auth');
 
+// Example implementation for a searchBooks query
+const searchBooks = async (parent, { query }) => {
+  const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
+  const data = await response.json();
+  return data.items.map(item => ({
+    bookId: item.id,
+    title: item.volumeInfo.title,
+    authors: item.volumeInfo.authors || [],
+    description: item.volumeInfo.description,
+    image: item.volumeInfo.imageLinks ? item.volumeInfo.imageLinks.thumbnail : '',
+    link: item.volumeInfo.infoLink,
+  }));
+};
+
 const resolvers = {
   Query: {
     me: async (parent, args, context) => {
@@ -10,6 +24,7 @@ const resolvers = {
       }
       throw new AuthenticationError('Not logged in');
     },
+    searchBooks, // Add searchBooks resolver here
   },
   Mutation: {
     login: async (parent, { email, password }) => {
@@ -35,6 +50,9 @@ const resolvers = {
     },
     saveBook: async (parent, { bookData }, context) => {
       if (context.user) {
+        // Log bookData to verify its structure
+        console.log('Received bookData:', bookData);
+
         const updatedUser = await User.findByIdAndUpdate(
           { _id: context.user._id },
           { $addToSet: { savedBooks: bookData } },

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_USER } from '@graphql/mutations';
-import Auth from '../utils/auth';
+import Auth from '../utils/auth'; // Ensure this is the correct path
 
 const SignupForm = () => {
   const [formState, setFormState] = useState({ username: '', email: '', password: '' });
@@ -14,14 +14,9 @@ const SignupForm = () => {
         variables: { ...formState },
       });
 
-      // Ensure the token is being returned in the mutation response
-      if (data && data.addUser && data.addUser.token) {
-        Auth.login(data.addUser.token);
-      } else {
-        console.error('Token not found in the response');
-      }
+      Auth.login(data.addUser.token); // Make sure this is the correct function call
     } catch (e) {
-      console.error('Signup error:', e); // Improve error logging
+      console.error('Signup error:', e);
     }
   };
 
@@ -59,7 +54,7 @@ const SignupForm = () => {
         />
         <button type="submit">Submit</button>
       </form>
-      {error && <div>Signup failed</div>} {/* Handle error display */}
+      {error && <div>Signup failed</div>}
     </div>
   );
 };
