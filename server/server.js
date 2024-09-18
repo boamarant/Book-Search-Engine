@@ -32,6 +32,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: authMiddleware,
+  persistedQueries: false,
 });
 
 // Start Apollo Server and apply middleware to Express app
