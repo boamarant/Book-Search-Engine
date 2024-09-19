@@ -16,7 +16,7 @@ app.use(express.json());
 
 // CORS setup
 const corsOptions = {
-  origin: process.env.LIVE_2 || 'http://localhost:3000', // Client's URL
+  origin: process.env.LIVE_2 || 'https://book-search-engine-b891.onrender.com' || 'http://localhost:3000', // Client's URL
   credentials: true,
 };
 app.use(cors(corsOptions));
