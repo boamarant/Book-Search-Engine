@@ -1,5 +1,4 @@
-require('dotenv').config(); // Add this line at the top
-
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { ApolloServer } = require('apollo-server-express');
@@ -17,7 +16,7 @@ app.use(express.json());
 
 // CORS setup
 const corsOptions = {
-  origin: 'http://localhost:3000', // Client's URL
+  origin: process.env.LIVE || 'http://localhost:3000', // Client's URL
   credentials: true,
 };
 app.use(cors(corsOptions));
