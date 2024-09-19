@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 
 // Define the HTTP link
 const httpLink = createHttpLink({
-  uri: process.env.LIVE || 'http://localhost:3001/graphql', 
+  uri: 'https://book-search-engine-b891.onrender.com/graphql', 
 });
 
 // Define the auth link to include JWT in headers
